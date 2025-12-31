@@ -6,15 +6,20 @@ Most Transformer tutorials rely heavily on high-level PyTorch modules, which obs
 This project aims to rebuild a minimal Transformer from scratch to deeply understand its internal mechanics and trade-offs, while keeping the implementation readable and debuggable.
 
 ## Architecture Overview
-Input tokens x
- └─> LayerNorm (pre-LN)
-       └─> Multihead Self-Attention
-             └─> Dropout
-                   └─> Residual Add (x + Attention)
-                         └─> LayerNorm (pre-LN)
-                               └─> FeedForward MLP
-                                     └─> Dropout
-                                           └─> Residual Add (x_res + MLP)
+```mermaid
+graph TD
+    X[Input tokens x]
+    LN1[LayerNorm<br/>pre-LN]
+    MHA[Multihead Self Attention]
+    D1[Dropout]
+    R1[Residual Add]
+    LN2[LayerNorm<br/>pre-LN]
+    FFN[FeedForward MLP]
+    D2[Dropout]
+    R2[Residual Add]
+
+    X --> LN1 --> MHA --> D1 --> R1 --> LN2 --> FFN --> D2 --> R2
+```
 
 ## Key Design Decisions & Trade-offs
 ### 3.1 Manual Attention Masking
