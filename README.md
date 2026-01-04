@@ -20,7 +20,7 @@ graph TD
     X --> LN1 --> MHA --> D1 --> R1 --> LN2 --> FFN --> D2 --> R2
 ```
 
-## Key Design Decisions & Trade-offs
+## Key Implementations & Trade-offs
 ### 3.1 Manual Attention Masking
 Instead of relying on PyTorch’s built-in causal attention, I explicitly construct attention masks and apply -inf before softmax.
 ### 3.2 Custom LayerNorm vs nn.LayerNorm
