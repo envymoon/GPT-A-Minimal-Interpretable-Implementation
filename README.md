@@ -30,3 +30,21 @@ I implemented a custom LayerNorm to verify normalization behavior, then replaced
 The model explicitly reshapes the embedding dimension d_model into (num_heads, head_dim) to ensure independent attention subspaces. This helped clarify why individual heads have reduced representational capacity but gain diversity through parallel attention.
 
 ## Results & Observations
+
+
+### Tokenization
+To maintain consistency with standard causal language modeling practices, the **GPT-2 tokenizer BPE** (Byte-Pair Encoding) was used for preprocessing. This ensures that the model learns from a robust and widely-recognized vocabulary structure.
+
+### Citation
+The model is trained/validated using the [FineWeb-Edu](https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu) dataset, a high-quality educational subset of FineWeb released by HuggingFaceFW. 
+
+```bibtex
+@misc{fineweb-edu,
+  author    = {Guilherme Penedo and others},
+  title     = {The FineWeb-Edu Dataset},
+  year      = {2024},
+  publisher = {HuggingFace},
+  journal   = {HuggingFace Repository},
+  howpublished = {\url{[https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu](https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu)}}
+}
+
