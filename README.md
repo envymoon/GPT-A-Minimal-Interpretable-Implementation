@@ -1,4 +1,4 @@
-A ground-up PyTorch implementation focusing on attention mechanics, masking, and normalization design choices.
+## A ground-up PyTorch implementation focusing on attention mechanics, masking, and normalization design choices.
 
 ## Project Motivation
 Most Transformer tutorials rely heavily on high-level PyTorch modules, which obscures critical design details such as attention masking, normalization placement, and tensor reshaping across heads.
@@ -27,6 +27,16 @@ Instead of relying on PyTorch’s built-in causal attention, I explicitly constr
 I implemented a custom LayerNorm to verify normalization behavior, then replaced it with nn.LayerNorm for efficiency. Both implementations were kept to compare correctness and performance.
 ### 3.3 Multi-Head Attention Reshaping
 The model explicitly reshapes the embedding dimension d_model into (num_heads, head_dim) to ensure independent attention subspaces. This helped clarify why individual heads have reduced representational capacity but gain diversity through parallel attention.
+### 3.4 Rotary Positional Embeddings (RoPE)
+- **Relative Position Encoding**: RoPE captures relative positions by rotating the query and key representations in a complex space.
+
+## 4 Training Dynamics
+Below is the loss curve comparing training and validation performance 
+![Training vs Validation Loss](assets/loss_comparison.png)
+
+## Inference & Decoding Techniques
+* **Temperature Scaling**: Adjusted to control the "sharpness" of the probability distribution. Lower temperatures make the model more deterministic, while higher values increase diversity.
+* **Top-P Sampling**: Limits the sampling pool to the top cumulative probability mass, effectively filtering out low-probability "tail" tokens.
 
 ## Results & Observations
 
