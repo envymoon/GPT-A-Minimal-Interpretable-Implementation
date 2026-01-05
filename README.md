@@ -1,4 +1,5 @@
-## A ground-up PyTorch implementation focusing on attention mechanics, masking, and normalization design choices.
+## GPT-A-Minimal-Interpretable-Implementation
+A ground-up PyTorch implementation focusing on attention mechanics, masking, and normalization design choices.
 [![App](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/ianhaimo/GPT-A-Minimal-Interpretable-Implementation)
 
 ## Project Motivation
