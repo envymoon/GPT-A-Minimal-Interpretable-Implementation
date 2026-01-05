@@ -1,5 +1,12 @@
 ## A ground-up PyTorch implementation focusing on attention mechanics, masking, and normalization design choices.
 
+<iframe
+	src="https://ianhaimo-transformer-a-minimal-interpretable-implementation.hf.space"
+	frameborder="0"
+	width="850"
+	height="450"
+></iframe>
+
 ## Project Motivation
 Most Transformer tutorials rely heavily on high-level PyTorch modules, which obscures critical design details such as attention masking, normalization placement, and tensor reshaping across heads.
 This project aims to rebuild a minimal Transformer from scratch to deeply understand its internal mechanics and trade-offs, while keeping the implementation readable and debuggable.
