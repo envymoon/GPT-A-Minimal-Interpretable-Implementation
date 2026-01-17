@@ -73,7 +73,7 @@ if __name__ == "__main__":
                     json.dump(history, f)
             
             if step % save_every == 0 and step > 0:
-                torch.save(model.state_dict(), f"model_latestet.pt") #model_step_{step}.pt
+                torch.save(model.state_dict(), f"model_latestet.pt")
         
             if step % eval_every == 0:
                 model.eval()
