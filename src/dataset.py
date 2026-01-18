@@ -18,7 +18,7 @@ def get_dataloaders(batch_size=4):
     tokenizer.pad_token = tokenizer.eos_token
 
     def tokenize_function(examples):
-        return tokenizer(examples["text"], truncation=True, max_length=512, padding="max_length")
+        return tokenizer(examples["text"], truncation=True, max_length=512)
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
