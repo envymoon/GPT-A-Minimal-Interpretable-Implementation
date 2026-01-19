@@ -25,8 +25,8 @@ class RoPE(nn.Module):
         self.register_buffer("inv_freq", inv_freq)
 
     def forward(self, seq_len, device):
-        t = torch.arange(seq_len, device=device).type_as(self.inv_freq)
-        freqs = torch.einsum("i,j->ij", t, self.inv_freq)
+        pos = torch.arange(seq_len, device=device).type_as(self.inv_freq)
+        freqs = torch.einsum("i,j->ij", pos, self.inv_freq)
         emb = torch.cat((freqs, freqs), dim=-1)
         return emb.cos()[None, None, :, :], emb.sin()[None, None, :, :]
 
