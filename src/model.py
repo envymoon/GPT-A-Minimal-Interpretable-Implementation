@@ -42,7 +42,7 @@ class GPT(nn.Module):
 
         self.ln = nn.LayerNorm(d)
         self.classifier = nn.Linear(d, self.vocab_size, bias=False)
-        self.classifier.weight = self.token_embedding.weight
+        self.classifier.weight = self.token_embedding.weight # weight tying
         
     def forward(self, input_token): 
         B,T = input_token.shape
@@ -85,7 +85,7 @@ class Transformer_Block(nn.Module):
         B, T, D = x.shape
         x_res = x
         # --- Manual LayerNorm Implementation (for Interpretability)
-        mean = x.mean(dim=-1, keepdim=True)      # [B,T,1]
+        mean = x.mean(dim=-1, keepdim=True)   # [B,T,1]
         var = x.var(dim=-1, unbiased=False, keepdim=True)  # [B,T,1]
         epsilon = 1e-5
         x_norm = (x - mean) / torch.sqrt(var + epsilon) #feature-wise
@@ -109,7 +109,7 @@ class Transformer_Block(nn.Module):
         a = self.attn_dropout(a)
         
         attention = a @ v  # [B, h, T, d_k]
-        attention = attention.transpose(1, 2).contiguous()      # [B, T, h, d_k]
+        attention = attention.transpose(1, 2).contiguous()  # [B, T, h, d_k]
         attention = attention.view(B, T, D)  # [B, T, d]
         
         attention = self.fc_head(attention)
