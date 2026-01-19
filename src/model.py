@@ -9,7 +9,7 @@ def rotate_half(x):
     x2 = x[..., x.shape[-1] // 2 :]
     return torch.cat((-x2, x1), dim=-1)
 
-def apply_rope(q, k, cos, sin):
+def rope(q, k, cos, sin):
     """
     q, k: [B, H, K, d]
     cos, sin: [1, 1, H, K]
@@ -99,7 +99,7 @@ class Transformer_Block(nn.Module):
         k = self.fc_K(out).view(B, T, self.h, self.d_k).transpose(1, 2).contiguous() # [B, h, T, d_k]
         v = self.fc_V(out).view(B, T, self.h, self.d_k).transpose(1, 2).contiguous() # [B, h, T, d_k]
 
-        q, k = apply_rope(q, k, cos, sin)
+        q, k = rope(q, k, cos, sin)
 
         mask = torch.triu(torch.ones(T,T), diagonal = 1).unsqueeze(0).unsqueeze(0).bool().to(x.device)
         e = q @ k.transpose(-2,-1) / math.sqrt(self.d_k) # [B,h,T,T]
