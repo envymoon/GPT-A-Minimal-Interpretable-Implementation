@@ -19,9 +19,9 @@ def apply_rope(q, k, cos, sin):
     return q_embed, k_embed
 
 class RoPE(nn.Module):
-    def __init__(self, d_model, max_len=512):
+    def __init__(self, d, max_len=512):
         super().__init__()
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, d_model, 2).float() / d_model))
+        inv_freq = 1.0 / (10000 ** (torch.arange(0, d, 2).float() / d))
         self.register_buffer("inv_freq", inv_freq)
 
     def forward(self, seq_len, device):
@@ -110,7 +110,7 @@ class Transformer_Block(nn.Module):
         
         attention = a @ v  # [B, h, T, d_k]
         attention = attention.transpose(1, 2).contiguous()      # [B, T, h, d_k]
-        attention = attention.view(B, T, D)  # [B, T, d_model]
+        attention = attention.view(B, T, D)  # [B, T, d]
         
         attention = self.fc_head(attention)
         
