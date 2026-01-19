@@ -22,13 +22,16 @@ class RoPE(nn.Module):
     def __init__(self, d, max_len=512):
         super().__init__()
         inv_freq = 1.0 / (10000 ** (torch.arange(0, d, 2).float() / d))
-        self.register_buffer("inv_freq", inv_freq)
+        t = torch.arange(max_len).float()
+        
+        freqs = torch.einsum("i,j->ij", t, inv_freq)
+        emb = torch.cat((freqs, freqs), dim=-1)
+        
+        self.register_buffer("cos_cached", emb.cos()[None, None, :, :])
+        self.register_buffer("sin_cached", emb.sin()[None, None, :, :])
 
     def forward(self, seq_len, device):
-        pos = torch.arange(seq_len, device=device).type_as(self.inv_freq)
-        freqs = torch.einsum("i,j->ij", pos, self.inv_freq)
-        emb = torch.cat((freqs, freqs), dim=-1)
-        return emb.cos()[None, None, :, :], emb.sin()[None, None, :, :]
+        return self.cos_cached[:, :, :seq_len, :], self.sin_cached[:, :, :seq_len, :]
 
 class GPT(nn.Module): 
     def __init__(self, total_token, max_len, d, n_layers):
