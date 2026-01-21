@@ -9,9 +9,8 @@ model = GPT(total_token=len(tokenizer), max_len=512, d=768, n_layers=12).to(devi
 model.load_state_dict(torch.load("model_step_100000.pt", map_location=device))
 model.eval()
 
-def text_completion_inference(model, tokenizer, max_new_tokens=100, temperature=0.6, top_p=0.8):
+def text_completion_inference(model, tokenizer, max_new_tokens=100, temperature=0.6, top_p=0.8, repetition_penalty = 1.2):
     print(f"model loaded (device: {device}), type 'quit/exit' to quit")
-    repetition_penalty = 1.2
     while True:
         user_input = input("\nType a start token: ")
         if user_input.lower() in ['quit', 'exit']:
