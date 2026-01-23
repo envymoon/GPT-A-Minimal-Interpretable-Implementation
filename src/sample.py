@@ -9,7 +9,7 @@ model = GPT(total_token=len(tokenizer), max_len=512, d=768, n_layers=12).to(devi
 model.load_state_dict(torch.load("model_step_100000.pt", map_location=device))
 model.eval()
 
-def text_completion_inference(prompt, max_new_tokens, temperature, top_p, repetition_penalty):
+def text_completion_inference(prompt, max_new_tokens, temperature, top_k, top_p, repetition_penalty):
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
     
     for _ in range(int(max_new_tokens)):
@@ -26,6 +26,11 @@ def text_completion_inference(prompt, max_new_tokens, temperature, top_p, repeti
                     next_token_logits[0, token_id] /= repetition_penalty
                 else:
                     next_token_logits[0, token_id] *= repetition_penalty
+
+            if top_k > 0:
+                values, _ = torch.topk(next_token_logits, min(top_k, next_token_logits.size(-1)))
+                indices_to_remove_k = next_token_logits < values[:, [-1]]
+                next_token_logits[indices_to_remove_k] = -float('Inf')
             
             if top_p > 0.0:
                 sorted_logits, sorted_indices = torch.sort(next_token_logits, descending=True, dim=-1)
