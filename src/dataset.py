@@ -11,8 +11,13 @@ def get_dataloaders(batch_size=4):
         "../data/000_00003.parquet"
     ]
     
-    dataset_train = load_dataset("parquet", data_files=data_files, split="train[:95%]")
-    dataset_val = load_dataset("parquet", data_files=data_files, split="train[-5%:]")
+    full_dataset = load_dataset("parquet", data_files=data_files, split="train")
+    
+    split_dataset = full_dataset.train_test_split(test_size=0.1, seed=42)
+    
+    dataset_train = split_dataset['train']
+    dataset_val = split_dataset['test']
+
 
     tokenizer = AutoTokenizer.from_pretrained("gpt2")
     tokenizer.pad_token = tokenizer.eos_token
