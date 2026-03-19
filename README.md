@@ -36,9 +36,11 @@ The model explicitly reshapes the embedding dimension d_model into (num_heads, h
 Below is the loss curve comparing training and validation performance 
 ![Training vs Validation Loss](assets/loss_comparison.png)
 
-## Inference & Decoding Techniques
+## Inference & Sampling Techniques
 * **Temperature Scaling**: Adjusted to control the "sharpness" of the probability distribution. Lower temperatures make the model more deterministic, while higher values increase diversity.
 * **Top-P Sampling**: Limits the sampling pool to the top cumulative probability mass, effectively filtering out low-probability "tail" tokens.
+* **Top-K Sampling**: Filters the vocabulary to keep only the `K` most likely tokens, preventing the model from picking highly improbable "noise" tokens.
+* **Repetition Penalty**: Applies a discount factor to the logits of previously generated tokens, preventing the model from falling into repetitive loops.
 
 ## Results & Observations
 
