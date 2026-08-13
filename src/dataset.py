@@ -1,36 +1,64 @@
+"""Packed-token datasets for next-token prediction."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
 import torch
-from datasets import load_dataset
-from transformers import AutoTokenizer, DataCollatorForLanguageModeling
-from torch.utils.data import DataLoader
-
-def get_dataloaders(batch_size=4):
-    data_files = [
-        "../data/000_00000.parquet",
-        "../data/000_00001.parquet",
-        "../data/000_00002.parquet",
-        "../data/000_00003.parquet"
-    ]
-    
-    full_dataset = load_dataset("parquet", data_files=data_files, split="train")
-    
-    split_dataset = full_dataset.train_test_split(test_size=0.1, seed=42)
-    
-    dataset_train = split_dataset['train']
-    dataset_val = split_dataset['test']
+from torch.utils.data import DataLoader, Dataset
 
 
-    tokenizer = AutoTokenizer.from_pretrained("gpt2")
-    tokenizer.pad_token = tokenizer.eos_token
+class PackedTokenDataset(Dataset[torch.Tensor]):
+    """Read fixed-length training examples from a memory-mapped uint32 stream."""
 
-    def tokenize_function(examples):
-        return tokenizer(examples["text"], truncation=True, max_length=512)
+    def __init__(
+        self, path: str | Path, sequence_length: int, random_windows: bool = False
+    ) -> None:
+        self.path = Path(path)
+        if not self.path.exists():
+            raise FileNotFoundError(
+                f"Missing token file: {self.path}. Run src/prepare_data.py first."
+            )
+        self.tokens = np.memmap(self.path, dtype=np.uint32, mode="r")
+        self.sequence_length = sequence_length
+        self.random_windows = random_windows
+        self.num_sequences = max(0, (len(self.tokens) - 1) // sequence_length)
+        if self.num_sequences == 0:
+            raise ValueError(f"{self.path} does not contain one complete sequence")
 
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+    def __len__(self) -> int:
+        return self.num_sequences
 
-    tokenized_datasets = dataset_train.map(tokenize_function, batched=True, num_proc=4)
-    tokenized_val = dataset_val.map(tokenize_function, batched=True, num_proc=4)
+    def __getitem__(self, index: int) -> torch.Tensor:
+        if self.random_windows:
+            # Changing starts across epochs prevents every book from being cut at
+            # the same permanent context boundaries. Validation remains fixed.
+            max_start = len(self.tokens) - self.sequence_length - 1
+            start = int(torch.randint(0, max_start + 1, ()).item())
+        else:
+            start = index * self.sequence_length
+        stop = start + self.sequence_length + 1
+        # Copy detaches the tensor from the read-only memory map.
+        return torch.from_numpy(np.asarray(self.tokens[start:stop], dtype=np.int64).copy())
 
-    train_loader = DataLoader(tokenized_datasets, batch_size=batch_size, shuffle=True, collate_fn=data_collator)
-    val_loader = DataLoader(tokenized_val, batch_size=batch_size, shuffle=False, collate_fn=data_collator)
 
-    return train_loader, val_loader, tokenizer
+def get_dataloaders(
+    train_path: str | Path,
+    val_path: str | Path,
+    sequence_length: int,
+    batch_size: int,
+    num_workers: int = 0,
+    pin_memory: bool = False,
+) -> tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor]]:
+    train_dataset = PackedTokenDataset(train_path, sequence_length, random_windows=True)
+    val_dataset = PackedTokenDataset(val_path, sequence_length)
+    common = {
+        "batch_size": batch_size,
+        "num_workers": num_workers,
+        "pin_memory": pin_memory,
+        "persistent_workers": num_workers > 0,
+    }
+    train_loader = DataLoader(train_dataset, shuffle=True, drop_last=True, **common)
+    val_loader = DataLoader(val_dataset, shuffle=False, drop_last=False, **common)
+    return train_loader, val_loader

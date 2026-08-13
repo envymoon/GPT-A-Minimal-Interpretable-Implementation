@@ -1,0 +1,39 @@
+{
+  "tokenizer_name": "tokenizers/minigpt-bilingual-50304",
+  "validation_fraction": 0.005,
+  "min_chars": 200,
+  "max_chars": 5000000,
+  "sources": [
+    {
+      "name": "local_txt_books",
+      "path": "~/Downloads/books/**/*.txt",
+      "format": "text",
+      "strip_gutenberg_boilerplate": true,
+      "collapse_repeated_documents": true,
+      "record_groups": true,
+      "validation_fraction": 0.1,
+      "validation_groups": ["OPTIONAL_EXPLICIT_HELD_OUT_BOOK.txt"],
+      "license": "TODO: verify each work before training or redistribution",
+      "provenance": "TODO: record source URL and acquisition date",
+      "quality_notes": "One file is treated as one complete work"
+    },
+    {
+      "name": "textbooks_placeholder",
+      "path": "data/raw/textbooks/**/*.jsonl",
+      "text_field": "text",
+      "group_field": "book_id",
+      "license": "TODO: fill before training",
+      "provenance": "TODO: fill source URL and acquisition date",
+      "quality_notes": "TODO: describe subject coverage and review policy"
+    },
+    {
+      "name": "curated_knowledge_placeholder",
+      "path": "data/raw/curated/**/*.jsonl",
+      "text_field": "text",
+      "group_field": "work_id",
+      "license": "TODO: fill before training",
+      "provenance": "TODO: fill source URL and acquisition date",
+      "quality_notes": "TODO: describe filtering and contamination checks"
+    }
+  ]
+}

@@ -3,6 +3,8 @@
 *.pth
 *.ipynb
 data/
+runs/
+tokenizers/
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 __pycache__/
