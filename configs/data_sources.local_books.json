@@ -1,0 +1,23 @@
+{
+  "tokenizer_name": "tokenizers/minigpt-bilingual-50304",
+  "validation_fraction": 0.1,
+  "min_chars": 200,
+  "max_chars": 5000000,
+  "seed": 42,
+  "progress_every": 1,
+  "sources": [
+    {
+      "name": "local_curated_books",
+      "path": "~/Downloads/books/**/*.txt",
+      "format": "text",
+      "strip_gutenberg_boilerplate": true,
+      "collapse_repeated_documents": true,
+      "record_groups": true,
+      "validation_fraction": 0.1,
+      "validation_groups": ["The Great Gatsby.txt"],
+      "license": "Mixed/unknown: verify each work before redistribution",
+      "provenance": "User-curated local files in ~/Downloads/books",
+      "quality_notes": "Each TXT file is treated as one ordered work and one split group"
+    }
+  ]
+}
